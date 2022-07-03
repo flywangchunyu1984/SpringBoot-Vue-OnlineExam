@@ -15,4 +15,6 @@ public class Item {
     private Integer fillNumber;
 
     private Integer judgeNumber;
+
+	
 }

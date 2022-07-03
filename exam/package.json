@@ -5,20 +5,21 @@
   "author": "",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server --inline  --host 0.0.0.0 --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
   "dependencies": {
     "@babel/preset-es2015": "^7.0.0-beta.53",
-    "axios": "^0.18.0",
-    "echarts": "^4.2.0-rc.2",
-    "element-ui": "^2.4.11",
+    "axios": "^0.18.1",
+    "echarts": "^4.9.0",
+    "element-ui": "^2.15.1",
     "global": "^4.4.0",
     "vis": "^4.21.0",
-    "vue": "^2.5.2",
-    "vue-cookies": "^1.5.12",
+    "vue": "^2.6.12",
+    "vue-cookies": "^1.7.4",
     "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.6.12",
     "vuex": "^3.0.1",
     "vuex-persistedstate": "^2.5.4"
   },
@@ -57,10 +58,9 @@
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.5.2",
     "webpack": "^3.12.0",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^2.9.1",
+    "webpack-dev-server": "^2.11.5",
     "webpack-merge": "^4.1.0"
   },
   "engines": {

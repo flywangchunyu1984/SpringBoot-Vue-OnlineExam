@@ -11,7 +11,7 @@
       <ul class="paper" v-loading="loading">
         <li class="item" v-for="(item,index) in pagination.records" :key="index">
           <h4 @click="toExamMsg(item.examCode)">{{item.source}}</h4>
-          <p class="name">{{item.source}}-{{item.description}}</p>
+          <!-- <p class="name">{{item.source}}-{{item.description}}</p> -->
           <div class="info">
             <i class="el-icon-loading"></i><span>{{item.examDate.substr(0,10)}}</span>
             <i class="iconfont icon-icon-time"></i><span v-if="item.totalTime != null">限时{{item.totalTime}}分钟</span>
@@ -24,7 +24,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="pagination.current"
-          :page-sizes="[6, 10, 20, 40]"
+          :page-sizes="[8, 10, 20, 40]"
           :page-size="pagination.size"
           layout="total, sizes, prev, pager, next, jumper"
           :total="pagination.total">
@@ -42,10 +42,10 @@ export default {
       loading: false,
       key: null, //搜索关键字
       allExam: null, //所有考试信息
-      pagination: { //分页后的考试信息
+      pagination: { //分页后的考试信息2
         current: 1, //当前页
         total: null, //记录条数
-        size: 6 //每页条数
+        size: 10 //每页条数
       }
     }
   },
@@ -133,10 +133,11 @@ export default {
   margin-right: 14px;
 }
 .paper .item {
-  width: 380px;
+  width: 180px;
+  height:100px;
   border-radius: 4px;
-  padding: 20px 30px;
-  border: 1px solid #eee;
+  padding: 0px 10px;
+  border: 5px solid #eee;
   box-shadow: 0 0 4px 2px rgba(217,222,234,0.3);
   transition: all 0.6s ease;
 }
@@ -153,7 +154,7 @@ export default {
   color: #88949b;
 }
 .paper * {
-  margin: 20px 0;
+  margin: 10px 0;
 }
 .wrapper .paper {
   display: flex;

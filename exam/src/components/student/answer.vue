@@ -39,17 +39,19 @@
               </li>
             </ul>
             <div class="l-bottom">
-              <div class="item">
+              <div class="item" style="height:370px;overflow-y:auto">
                 <p>选择题部分</p>
                 <ul>
-                  <li v-for="(list, index1) in topic[1]" :key="index1">
-                    <a href="javascript:;" 
-                      @click="change(index1)"
-                      :class="{'border': index == index1 && currentType == 1,'bg': bg_flag && topic[1][index1].isClick == true}">
-                      <span :class="{'mark': topic[1][index1].isMark == true}"></span>
-                      {{index1+1}}
-                    </a>
-                  </li>
+                  <!-- <el-scrollbar> -->
+                    <li v-for="(list, index1) in topic[1]" :key="index1">
+                      <a href="javascript:;" 
+                        @click="change(index1)"
+                        :class="{'border': index == index1 && currentType == 1,'bg': bg_flag && topic[1][index1].isClick == true}">
+                        <span :class="{'mark': topic[1][index1].isMark == true}"></span>
+                        {{index1+1}}
+                      </a>
+                    </li>
+                  <!-- </el-scrollbar> -->
                 </ul>
               </div>
               <div class="item">
@@ -83,12 +85,40 @@
           <div class="content">
             <p class="topic"><span class="number">{{number}}</span>{{showQuestion}}</p>
             <div v-if="currentType == 1">
-              <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="1">{{showAnswer.answerA}}</el-radio>
-                <el-radio :label="2">{{showAnswer.answerB}}</el-radio>
-                <el-radio :label="3">{{showAnswer.answerC}}</el-radio>
-                <el-radio :label="4">{{showAnswer.answerD}}</el-radio>
-              </el-radio-group>
+              <div style="width:250px">
+                <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
+                  <el-radio label="1" border>{{showAnswer.answerA}}</el-radio>
+                  <el-radio label="2" border>{{showAnswer.answerB}}</el-radio>
+                  <el-radio label="3" border>{{showAnswer.answerC}}</el-radio>
+                  <el-radio label="4" border>{{showAnswer.answerD}}</el-radio>
+                </el-radio-group>
+              </div>
+              
+              <div class="analysis" >
+                <ul>
+                  <li> 
+                        
+                       <el-tooltip placement="right">
+                        <div slot="content">{{reduceAnswer.rightAnswer}}</div>
+                        <el-button type="success">正确答案：</el-button>
+                       </el-tooltip>
+                      <span v-if="isSelected" style="font-weight:bold;font-size:24px">{{reduceAnswer.rightAnswer}},回答正确！！！</span>
+                      <span v-else-if="isSelected === false" style="font-weight:bold;font-size:24px;color:red">{{reduceAnswer.rightAnswer}},回答错误✗✗✗</span>
+                    
+                  </li>  
+                  <li>
+                    <el-tag>题目解析：</el-tag>
+                    <span >{{radioName[0]}}</span>
+                  </li>
+                  <li>
+                    <span v-if="isSelected === null"></span>
+                    <span v-else>{{reduceAnswer.analysis == null ? '暂无解析': reduceAnswer.analysis}}</span>
+                  </li>
+                </ul>
+                
+                  
+                
+              </div>
               <div class="analysis" v-if="isPractice">
                 <ul>
                   <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
@@ -180,7 +210,9 @@ export default {
       fillAnswer: [[]], //二维数组保存所有填空题答案
       judgeAnswer: [], //保存所有判断题答案
       topic1Answer: [],  //学生选择题作答编号,
-      rightAnswer: ''
+      rightAnswer: '',
+      radioName: [],
+      isSelected: false
     }
   },
   created() {
@@ -213,7 +245,7 @@ export default {
       this.$axios(`/api/exam/${examCode}`).then(res => {  //通过examCode请求试卷详细信息
         this.examData = { ...res.data.data} //获取考试详情
         this.index = 0
-        this.time = this.examData.totalScore //获取分钟数
+        this.time = this.examData.totalTime //获取分钟数
         let paperId = this.examData.paperId
         this.$axios(`/api/paper/${paperId}`).then(res => {  //通过paperId获取试题题目信息
           this.topic = {...res.data}
@@ -240,10 +272,19 @@ export default {
           this.number = 1
           this.showQuestion = dataInit[0].question
           this.showAnswer = dataInit[0]
+          this.radioName[0] = this.showAnswer.answerA
+          this.radioName[1] = this.showAnswer.answerA
+          this.radioName[2] = this.showAnswer.answerB
+          this.radioName[3] = this.showAnswer.answerC
+          this.radioName[4] = this.showAnswer.answerD
+          this.isSelected = null
+          //console.log(this.showAnswer.answerA)
         })
       })
     },
     change(index) { //选择题
+      this.radioName[0] = null
+      this.isSelected = null
       this.index = index
       let reduceAnswer = this.topic[1][this.index]
       this.reduceAnswer = reduceAnswer
@@ -261,6 +302,10 @@ export default {
         // console.log(Data)
         this.showQuestion = Data[this.index].question //获取题目信息
         this.showAnswer = Data[this.index]
+        this.radioName[1] = this.showAnswer.answerA
+        this.radioName[2] = this.showAnswer.answerB
+        this.radioName[3] = this.showAnswer.answerC
+        this.radioName[4] = this.showAnswer.answerD
         this.number = this.index + 1
       }else if(this.index >= len) {
         this.index = 0
@@ -319,6 +364,31 @@ export default {
       }
     },
     getChangeLabel(val) { //获取选择题作答选项
+      //this.radioName[0] = this.radioName[val]//当前选择的选项
+      //vue的dom更新是异步的，即当setter操作发生后，指令并不会立马更新，指令的更新操作会有一个延迟，当指令更新真正执行的时候，此时.text属性已经赋值，所以指令更新模板时得到的是新值。
+      this.$set(this.radioName, 0, this.radioName[val])
+      switch(this.reduceAnswer.rightAnswer) {
+        case "A": 
+          this.reduceAnswer.rightAnswer = 1
+          break
+        case "B": 
+          this.reduceAnswer.rightAnswer = 2
+          break
+        case "C":
+          this.reduceAnswer.rightAnswer = 3
+          break
+        case "D":
+          this.reduceAnswer.rightAnswer = 4
+          break  
+      }
+
+
+      if(val==this.reduceAnswer.rightAnswer) {
+        this.isSelected = true
+      }else{
+        this.isSelected = false
+      }
+      
       this.radio[this.index] = val //当前选择的序号
       if(val) {
         let data = this.topic[1]
@@ -327,6 +397,7 @@ export default {
       }
       /* 保存学生答题选项 */
       this.topic1Answer[this.index] = val 
+      console.log(this.radioName[0])
     },
     getJudgeLabel(val) {  //获取判断题作答选项
       this.judgeAnswer[this.index] = val
